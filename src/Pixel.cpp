@@ -1,38 +1,21 @@
-#include <iostream>
-#include <exception>
-
-class Pixel
-{
-private:
-    unsigned int blue;
-    unsigned int green;
-    unsigned int red;
-
-public:
-    ~Pixel();
-    const unsigned int &operator[](const char *);
-    Pixel();
-    Pixel(const Pixel &);
-    Pixel(unsigned int, unsigned int, unsigned int);
-    friend std::ostream &operator<<(std::ostream &os, const Pixel &pixel);
-};
+#include "Pixel.h"
 
 Pixel::~Pixel()
 {
-    std::cout << "The pixel object is being destroyed";
+    // std::cout << "The pixel object is being destroyed";
 }
 
 const unsigned int &Pixel::operator[](const char *key)
 {
-    if (key == "red")
+    if (strcmp(key, "red") == 0)
     {
         return this->red;
     }
-    else if (key == "green")
+    else if (strcmp(key, "green") == 0)
     {
         return this->green;
     }
-    else if (key == "blue")
+    else if (strcmp(key, "blue") == 0)
     {
         return this->blue;
     }
