@@ -1,32 +1,47 @@
-#include <string>
+#ifndef PPM_H
+#define PPM_H
+
+#include "Pixel.h"
 #include <vector>
-#include <Pixel.h>
+#include <fstream>
+#include <string.h>
 
 class PPM {
-private:
-    std::string comment;
-    unsigned int height;
-    std::string magic;
-    unsigned int maxColor;
-    std::vector<Pixel> pixels;
-    unsigned int width;
-
 public:
-    const std::string& getComment() const { return comment; }
-    void setComment(const std::string& newComment) { comment = newComment; }
-
-    unsigned int getHeight() const { return height; }
-    void setHeight(unsigned int newHeight) { height = newHeight; }
-
-    const std::string& getMagic() const { return magic; }
-    void setMagic(const std::string& newMagic) { magic = newMagic; }
-
-    unsigned int getMaxColor() const { return maxColor; }
-    void setMaxColor(unsigned int newMaxColor) { maxColor = newMaxColor; }
-
-    const std::vector<Pixel>& getPixels() const { return pixels; }
-    void setPixels(const std::vector<Pixel>& newPixels) { pixels = newPixels; }
-
-    unsigned int getWidth() const { return width; }
-    void setWidth(unsigned int newWidth) { width = newWidth; }
+    // Destructor
+    ~PPM();
+    // Getters
+    std::string getComment() const;
+    unsigned int getHeight() const;
+    std::string getMagic() const;
+    unsigned int getMaxColor() const;
+    unsigned int getSize() const;
+    unsigned int getWidth() const;
+    const Pixel & operator[](unsigned int) const;
+    Pixel & operator[](unsigned int);
+    // Constructors
+    const PPM & operator=(const PPM &);
+    const PPM & operator=(PPM &&);
+    PPM();
+    PPM(const PPM &);
+    PPM(PPM &&);
+    PPM(std::ifstream &);
+    // Setters
+    void setComment(std::string);
+    void setMagic(std::string);
+    void setMaxColor(unsigned int);
+    void setWidth(unsigned int);
+    void setHeight(unsigned int);
+    void resize(unsigned int);
+    // Output
+    void saveImageToFile(std::string);
+private:
+    std::string magic;
+    std::string comment;
+    unsigned int maxColor;
+    unsigned int height;
+    unsigned int width;
+    std::vector<Pixel> pixels;
 };
+
+#endif
