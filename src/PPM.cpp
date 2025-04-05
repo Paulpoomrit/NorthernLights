@@ -52,6 +52,10 @@ Pixel & PPM::operator[](unsigned int index)
     return pixels[index];
 }
 
+const std::vector<Pixel>& PPM::getPixels() const
+{
+    return this->pixels;
+}
 
 // ================= Constructors =================
 const PPM & PPM::operator=(const PPM & otherPPM)
@@ -165,6 +169,11 @@ void PPM::setHeight(unsigned int newHeight)
 void PPM::resize(unsigned int newLength)
 {
     pixels.resize(newLength);
+}
+
+void PPM::setPixels(const std::vector<Pixel>& newPixels)
+{
+    this->pixels = newPixels;
 }
 
 

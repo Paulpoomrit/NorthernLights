@@ -19,6 +19,7 @@ public:
     unsigned int getWidth() const;
     const Pixel & operator[](unsigned int) const;
     Pixel & operator[](unsigned int);
+    const std::vector<Pixel>& getPixels() const;
     // Constructors
     const PPM & operator=(const PPM &);
     const PPM & operator=(PPM &&);
@@ -33,6 +34,7 @@ public:
     void setWidth(unsigned int);
     void setHeight(unsigned int);
     void resize(unsigned int);
+    void setPixels(const std::vector<Pixel>&);
     // Output
     void saveImageToFile(std::string);
 private:
