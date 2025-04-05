@@ -186,7 +186,7 @@ void PPM::saveImageToFile(std::string outfileName)
     outfile << magic << '\n';
     // Comment
     if (!comment.empty())
-        outfile << comment << '\n';
+        outfile << "#" << comment << '\n';
     // Dimensions
     outfile << width << ' ' << height << '\n';
     // Max color
@@ -201,6 +201,6 @@ void PPM::saveImageToFile(std::string outfileName)
         }
         outfile << '\n';
     }
-
+    std::cout << "done save image to file";
     outfile.close();
 }
