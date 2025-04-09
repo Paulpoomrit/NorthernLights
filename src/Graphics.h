@@ -11,7 +11,10 @@ public:
 
     /* Special Filters */
     static PPM FloydSteinbergDither(const PPM& image);
+    static PPM InPlaceEmboss(const PPM& image);
 
 private:
+    /* Utilities */
     static std::vector<float> getFilterMatrix(const std::string& filter);
+    static int pixelDifference(unsigned int a, unsigned int b);
 };

@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 
+/* Utilities */
 std::vector<float> Graphics::getFilterMatrix(const std::string &filter)
 {
     std::vector<float> filterArray;
@@ -38,6 +39,10 @@ std::vector<float> Graphics::getFilterMatrix(const std::string &filter)
         throw std::invalid_argument("Unknown filter type: " + filter + ". ");
     }
     return filterArray;
+}
+int Graphics::pixelDifference(unsigned int a, unsigned int b)
+{
+    return (a > b) ? static_cast<int>(a - b) : -static_cast<int>(b - a);
 }
 
 /* Basic Functionality */
@@ -262,23 +267,18 @@ PPM Graphics::FloydSteinbergDither(const PPM &image)
     PPM greyifiedImg = Graphics::MakeGreyScale(image);
     PPM modifiedImage = image;
     std::vector<Pixel> greyifiedPixelVector = greyifiedImg.getPixels();
-    std::vector<Pixel> quantizedPixelVector;
     std::vector<Pixel> modifiedPixelVector;
-    quantizedPixelVector.reserve(greyifiedPixelVector.size());
     modifiedPixelVector.reserve(greyifiedPixelVector.size());
+    modifiedPixelVector = greyifiedPixelVector;
 
-    // quantized
-    for (auto pixel : greyifiedPixelVector)
+    // Quantized lamda func
+    auto QuantiseGreyscaleNBit = [](const Pixel p)
     {
-        if (pixel["red"] < 128)
-        {
-            quantizedPixelVector.push_back(Pixel(0, 0, 0));
-        }
-        else
-        {
-            quantizedPixelVector.push_back(Pixel(255, 255, 255));
-        }
-    }
+        int nBits = 2; // how many shades of grey? (,,>﹏<,,)
+        float fLevels = (1 << nBits) - 1;
+        unsigned int greyVal = std::clamp(std::round(float(p["red"])/ 255.0f * fLevels) / fLevels* 255.0f, 0.0f, 255.0f);
+        return Pixel(greyVal, greyVal, greyVal);
+    };
 
     const int width = image.getWidth();
     const int height = image.getHeight();
@@ -300,15 +300,14 @@ PPM Graphics::FloydSteinbergDither(const PPM &image)
         for (int x = 0; x < width; x++) // traverse columns of pixels
         {
             unsigned int pixelLoc = width * y + x;
-            Pixel originalPixel = greyifiedPixelVector[pixelLoc];
-            Pixel quantizedPixel = quantizedPixelVector[pixelLoc];
+            Pixel originalPixel = modifiedPixelVector[pixelLoc];
+            Pixel quantizedPixel = QuantiseGreyscaleNBit(originalPixel);
 
             int error[3] =
                 {
-                    originalPixel["red"] - quantizedPixel["red"],
-                    originalPixel["green"] - quantizedPixel["green"],
-                    originalPixel["blue"] - quantizedPixel["blue"]
-                };
+                    pixelDifference(originalPixel["red"], quantizedPixel["red"]),
+                    pixelDifference(originalPixel["green"], quantizedPixel["green"]),
+                    pixelDifference(originalPixel["blue"], quantizedPixel["blue"])};
 
             modifiedPixelVector[pixelLoc] = quantizedPixel;
 
@@ -342,6 +341,63 @@ PPM Graphics::FloydSteinbergDither(const PPM &image)
     modifiedImage.setPixels(modifiedPixelVector);
     return modifiedImage;
 }
+PPM Graphics::InPlaceEmboss(const PPM &image)
+{
+    std::vector<Pixel> pixelVector = image.getPixels();
+    PPM modifiedImage = image;
+    std::vector<float> filterArray;
+
+    const int width = image.getWidth();
+    const int height = image.getHeight();
+
+    // define surrounding pixels for the current pixel
+    const std::vector<int> offsets = {
+        -width - 1,
+        -width,
+        -width + 1,
+        -1,
+        0,
+        1,
+        width - 1,
+        width,
+        width + 1};
+
+    // get an appropriate filter matrix
+    try
+    {
+        filterArray = getFilterMatrix("emboss");
+    }
+    catch (const std::exception &e)
+    {
+        std::cout << e.what() << "Returning the original image...";
+        return image;
+    }
+
+    // applying filter
+    for (int y = 0; y < height; y++) // traverse rows of pixels
+    {
+        for (int x = 0; x < width; x++) // traverse columns of pixels
+        {
+            float newR = 0, newG = 0, newB = 0;
+            unsigned int pixelLoc = width * y + x;
+            for (int k = 0; k < 9; k++)
+            {
+                int neighbourLoc = pixelLoc + offsets[k];
+                if (neighbourLoc >= 0 && neighbourLoc < (height * width))
+                {
+                    newR += filterArray[k] * pixelVector[neighbourLoc]["red"];
+                    newG += filterArray[k] * pixelVector[neighbourLoc]["green"];
+                    newB += filterArray[k] * pixelVector[neighbourLoc]["blue"];
+                }
+            }
+
+            Pixel newPixel(newR, newG, newB);
+            pixelVector[pixelLoc] = newPixel;
+        }
+    }
+    modifiedImage.setPixels(pixelVector);
+    return modifiedImage;
+}
 
 int main()
 {
@@ -355,7 +411,8 @@ int main()
         // PPM result = Graphics::RotateImage(inputImage, 45);
         // PPM result = Graphics::ScaleImage(inputImage, 3);
         // PPM result = Graphics::TranslateImage(inputImage, 50, 0);
-        PPM result = Graphics::FloydSteinbergDither(inputImage);
+        // PPM result = Graphics::FloydSteinbergDither(inputImage);
+        PPM result = Graphics::InPlaceEmboss(inputImage);
         result.saveImageToFile("./assets/NewShahriar.ppm");
     }
     catch (const std::exception &e)
