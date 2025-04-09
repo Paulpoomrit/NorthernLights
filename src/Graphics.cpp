@@ -40,6 +40,7 @@ std::vector<float> Graphics::getFilterMatrix(const std::string &filter)
     return filterArray;
 }
 
+/* Basic Functionality */
 PPM Graphics::ApplyFilter(const PPM &image, const std::string &filter)
 {
     std::vector<Pixel> pixelVector = image.getPixels();
@@ -140,8 +141,8 @@ PPM Graphics::RotateImage(const PPM &image, double rotationAngle)
 
     const int width = image.getWidth();
     const int height = image.getHeight();
-    int centerX = width/2;
-    int centerY = height/2;
+    int centerX = width / 2;
+    int centerY = height / 2;
     double radians = rotationAngle * M_PI / 180.0;
     modifiedPixelVector.resize(width * height);
 
@@ -178,7 +179,7 @@ PPM Graphics::RotateImage(const PPM &image, double rotationAngle)
     return modifiedImage;
 }
 
-PPM Graphics::ScaleImage(const PPM& image, double scale)
+PPM Graphics::ScaleImage(const PPM &image, double scale)
 {
     std::vector<Pixel> pixelVector = image.getPixels();
     std::vector<Pixel> modifiedPixelVector;
@@ -186,15 +187,15 @@ PPM Graphics::ScaleImage(const PPM& image, double scale)
 
     const int width = image.getWidth();
     const int height = image.getHeight();
-    int centerX = width/2;
-    int centerY = height/2;
-    modifiedImage.setHeight(height*scale);
-    modifiedImage.setWidth(width*scale);
+    int centerX = width / 2;
+    int centerY = height / 2;
+    modifiedImage.setHeight(height * scale);
+    modifiedImage.setWidth(width * scale);
     modifiedPixelVector.resize((width * scale) * (height * scale));
 
     // define inverse scaling matrix
-    const double scalingMatrixInv[4] = {1/scale, 0,
-                                        0, 1/ scale};
+    const double scalingMatrixInv[4] = {1 / scale, 0,
+                                        0, 1 / scale};
 
     for (int y = 0; y < height * scale; y++) // traverse rows of pixels
     {
@@ -218,7 +219,7 @@ PPM Graphics::ScaleImage(const PPM& image, double scale)
     return modifiedImage;
 }
 
-PPM Graphics::TranslateImage(const PPM& image, int xOffset, int yOffset)
+PPM Graphics::TranslateImage(const PPM &image, int xOffset, int yOffset)
 {
     std::vector<Pixel> pixelVector = image.getPixels();
     std::vector<Pixel> modifiedPixelVector;
@@ -226,7 +227,7 @@ PPM Graphics::TranslateImage(const PPM& image, int xOffset, int yOffset)
 
     const int width = image.getWidth();
     const int height = image.getHeight();
-    modifiedPixelVector.resize(width*height);
+    modifiedPixelVector.resize(width * height);
 
     // define inverse translating matrix -> hommogenius coords
     const int translatingMatrixInv[9] = {1, 0, xOffset,
@@ -255,6 +256,93 @@ PPM Graphics::TranslateImage(const PPM& image, int xOffset, int yOffset)
     return modifiedImage;
 }
 
+/* Special Filters */
+PPM Graphics::FloydSteinbergDither(const PPM &image)
+{
+    PPM greyifiedImg = Graphics::MakeGreyScale(image);
+    PPM modifiedImage = image;
+    std::vector<Pixel> greyifiedPixelVector = greyifiedImg.getPixels();
+    std::vector<Pixel> quantizedPixelVector;
+    std::vector<Pixel> modifiedPixelVector;
+    quantizedPixelVector.reserve(greyifiedPixelVector.size());
+    modifiedPixelVector.reserve(greyifiedPixelVector.size());
+
+    // quantized
+    for (auto pixel : greyifiedPixelVector)
+    {
+        if (pixel["red"] < 128)
+        {
+            quantizedPixelVector.push_back(Pixel(0, 0, 0));
+        }
+        else
+        {
+            quantizedPixelVector.push_back(Pixel(255, 255, 255));
+        }
+    }
+
+    const int width = image.getWidth();
+    const int height = image.getHeight();
+
+    const std::vector<int> offsets = {
+        -width - 1,
+        -width,
+        -width + 1,
+        -1,
+        0,
+        1,
+        width - 1,
+        width,
+        width + 1};
+
+    // applying filter
+    for (int y = 0; y < height; y++) // traverse rows of pixels
+    {
+        for (int x = 0; x < width; x++) // traverse columns of pixels
+        {
+            unsigned int pixelLoc = width * y + x;
+            Pixel originalPixel = greyifiedPixelVector[pixelLoc];
+            Pixel quantizedPixel = quantizedPixelVector[pixelLoc];
+
+            int error[3] =
+                {
+                    originalPixel["red"] - quantizedPixel["red"],
+                    originalPixel["green"] - quantizedPixel["green"],
+                    originalPixel["blue"] - quantizedPixel["blue"]
+                };
+
+            modifiedPixelVector[pixelLoc] = quantizedPixel;
+
+            // update surrounding pixels
+            auto UpdatePixel = [&pixelLoc, &modifiedPixelVector, &error, &height, &width](const int offset, const float errorBias)
+            {
+                int neighbourLoc = pixelLoc + offset;
+                if (neighbourLoc >= 0 && neighbourLoc < (height * width))
+                {
+                    Pixel p = modifiedPixelVector[neighbourLoc];
+                    float newR = p["red"] + error[0] * errorBias;
+                    float newG = p["green"] + error[1] * errorBias;
+                    float newB = p["blue"] + error[2] * errorBias;
+
+                    // clamp
+                    newR = std::clamp(newR, 0.0f, 255.0f);
+                    newG = std::clamp(newG, 0.0f, 255.0f);
+                    newB = std::clamp(newB, 0.0f, 255.0f);
+
+                    Pixel newPixel(newR, newG, newB);
+                    modifiedPixelVector[neighbourLoc] = newPixel;
+                }
+            };
+            UpdatePixel(offsets[5], 7.0f / 16.0f);
+            UpdatePixel(offsets[6], 3.0f / 16.0f);
+            UpdatePixel(offsets[7], 5.0f / 16.0f);
+            UpdatePixel(offsets[8], 1.0f / 16.0f);
+        }
+    }
+
+    modifiedImage.setPixels(modifiedPixelVector);
+    return modifiedImage;
+}
+
 int main()
 {
     std::ifstream infile("./assets/Shahriar.ppm");
@@ -264,9 +352,10 @@ int main()
     {
         // PPM result = Graphics::MakeGreyScale(inputImage);
         // PPM result = Graphics::ApplyFilter(inputImage, "sharpen");
-        PPM result = Graphics::RotateImage(inputImage, 45);
+        // PPM result = Graphics::RotateImage(inputImage, 45);
         // PPM result = Graphics::ScaleImage(inputImage, 3);
         // PPM result = Graphics::TranslateImage(inputImage, 50, 0);
+        PPM result = Graphics::FloydSteinbergDither(inputImage);
         result.saveImageToFile("./assets/NewShahriar.ppm");
     }
     catch (const std::exception &e)
