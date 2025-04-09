@@ -24,6 +24,7 @@ Navigate to the project directory and run:
 
 -> On Mac:
 `clang++ -o program src/Graphics.cpp src/Pixel.cpp src/PPM.cpp -std=c++17`
+
 -> On Windows:
 `g++ -o program src/Graphics.cpp src/Pixel.cpp src/PPM.cpp -std=c++17`
 This will compile all the source files and create an executable called program.
