@@ -7,7 +7,7 @@ Grayscale Conversion: Convert color images to grayscale
 Geometric Transformations: Rotate, scale, and translate images
 Special Filters: Floyd-Steinberg dithering and in-place emboss (this was, at first, a mistake but looks cool enough, so we've decided to add it here as well).
 ![image](https://github.com/user-attachments/assets/1c868d4d-4a54-42cb-8d1c-7216ccbc4662)
-![image](https://github.com/user-attachments/assets/4256eb2a-28a7-4a31-87b0-fa7d5db8c8a2)
+![Screenshot 2025-04-09 at 12 18 15 PM](https://github.com/user-attachments/assets/b4d16be8-8052-4cad-8599-27d5460dda01)
 
 ### Demo:
 https://github.com/user-attachments/assets/904172f3-b265-45ca-9c3f-9f3dc96c8526
