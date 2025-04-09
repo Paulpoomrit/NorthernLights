@@ -2,10 +2,11 @@
 Basic PPM image processor
 
 ### Features
-Image Filters: Apply blur, sharpen, edge detection, and emboss filters
-Grayscale Conversion: Convert color images to grayscale
-Geometric Transformations: Rotate, scale, and translate images
-Special Filters: Floyd-Steinberg dithering and in-place emboss (this was, at first, a mistake but looks cool enough, so we've decided to add it here as well).
+- Image Filters: Apply blur, sharpen, edge detection, and emboss filters
+- Grayscale Conversion: Convert color images to grayscale
+- Geometric Transformations: Rotate, scale, and translate images
+- Special Filters: Floyd-Steinberg dithering and in-place emboss (this was, at first, a mistake but looks cool enough, so we've 
+- decided to add it here as well).
 ![image](https://github.com/user-attachments/assets/1c868d4d-4a54-42cb-8d1c-7216ccbc4662)
 ![Screenshot 2025-04-09 at 12 18 15 PM](https://github.com/user-attachments/assets/b4d16be8-8052-4cad-8599-27d5460dda01)
 
