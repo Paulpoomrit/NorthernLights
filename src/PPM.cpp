@@ -6,10 +6,8 @@
 #include <utility>
 #include <string>
 
-
 // ================= Destructor =================
 PPM::~PPM() {}
-
 
 // ================= Getters =================
 std::string PPM::getComment() const
@@ -34,7 +32,7 @@ unsigned int PPM::getMaxColor() const
 
 unsigned int PPM::getSize() const
 {
-    return height*width;
+    return height * width;
 }
 
 unsigned int PPM::getWidth() const
@@ -42,23 +40,23 @@ unsigned int PPM::getWidth() const
     return width;
 }
 
-const Pixel & PPM::operator[](unsigned int index) const
+const Pixel &PPM::operator[](unsigned int index) const
 {
     return pixels[index];
 }
 
-Pixel & PPM::operator[](unsigned int index)
+Pixel &PPM::operator[](unsigned int index)
 {
     return pixels[index];
 }
 
-const std::vector<Pixel>& PPM::getPixels() const
+const std::vector<Pixel> &PPM::getPixels() const
 {
     return this->pixels;
 }
 
 // ================= Constructors =================
-const PPM & PPM::operator=(const PPM & otherPPM)
+const PPM &PPM::operator=(const PPM &otherPPM)
 {
     if (this != &otherPPM)
     {
@@ -73,7 +71,7 @@ const PPM & PPM::operator=(const PPM & otherPPM)
     return *this;
 }
 
-const PPM & PPM::operator=(PPM && otherPPM)
+const PPM &PPM::operator=(PPM &&otherPPM)
 {
     if (this != &otherPPM)
     {
@@ -88,34 +86,34 @@ const PPM & PPM::operator=(PPM && otherPPM)
     return *this;
 }
 
-PPM::PPM() :
-    magic(),
-    comment(),
-    maxColor(0),
-    height(0),
-    width(0),
-    pixels()
-{}
+PPM::PPM() : magic(),
+             comment(),
+             maxColor(0),
+             height(0),
+             width(0),
+             pixels()
+{
+}
 
-PPM::PPM(const PPM & otherPPM) :
-    magic(otherPPM.magic),
-    comment(otherPPM.comment),
-    maxColor(otherPPM.maxColor),
-    height(otherPPM.height),
-    width(otherPPM.width),
-    pixels(otherPPM.pixels)
-{}
+PPM::PPM(const PPM &otherPPM) : magic(otherPPM.magic),
+                                comment(otherPPM.comment),
+                                maxColor(otherPPM.maxColor),
+                                height(otherPPM.height),
+                                width(otherPPM.width),
+                                pixels(otherPPM.pixels)
+{
+}
 
-PPM::PPM(PPM && otherPPM) :
-    magic(std::move(otherPPM.magic)),
-    comment(std::move(otherPPM.comment)),
-    maxColor(otherPPM.maxColor),
-    height(otherPPM.height),
-    width(otherPPM.width),
-    pixels(std::move(otherPPM.pixels))
-{}
+PPM::PPM(PPM &&otherPPM) : magic(std::move(otherPPM.magic)),
+                           comment(std::move(otherPPM.comment)),
+                           maxColor(otherPPM.maxColor),
+                           height(otherPPM.height),
+                           width(otherPPM.width),
+                           pixels(std::move(otherPPM.pixels))
+{
+}
 
-PPM::PPM(std::ifstream & file)
+PPM::PPM(std::ifstream &file)
 {
     // Magic number
     std::getline(file, magic);
@@ -131,13 +129,12 @@ PPM::PPM(std::ifstream & file)
     file >> maxColor;
     // Pixels
     unsigned int r, g, b;
-    for (int i=0; i < width*height; i++)
+    for (int i = 0; i < width * height; i++)
     {
         file >> r >> g >> b;
         pixels.push_back(Pixel(r, g, b));
     }
 }
-
 
 // ================= Setters =================
 void PPM::setComment(std::string newComment)
@@ -171,11 +168,10 @@ void PPM::resize(unsigned int newLength)
     pixels.resize(newLength);
 }
 
-void PPM::setPixels(const std::vector<Pixel>& newPixels)
+void PPM::setPixels(const std::vector<Pixel> &newPixels)
 {
     this->pixels = newPixels;
 }
-
 
 // ================= Output =================
 void PPM::saveImageToFile(std::string outfileName)
@@ -192,11 +188,11 @@ void PPM::saveImageToFile(std::string outfileName)
     // Max color
     outfile << maxColor << '\n';
     // Pixels
-    for (int i=0; i < height; i++)
+    for (int i = 0; i < height; i++)
     {
-        for (int j=0; j < width; j++)
+        for (int j = 0; j < width; j++)
         {
-            Pixel & p = pixels[i*width+j];
+            Pixel &p = pixels[i * width + j];
             outfile << p["red"] << ' ' << p["green"] << ' ' << p["blue"] << ' ';
         }
         outfile << '\n';

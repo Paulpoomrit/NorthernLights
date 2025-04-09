@@ -276,7 +276,7 @@ PPM Graphics::FloydSteinbergDither(const PPM &image)
     {
         int nBits = 2; // how many shades of grey? (,,>﹏<,,)
         float fLevels = (1 << nBits) - 1;
-        unsigned int greyVal = std::clamp(std::round(float(p["red"])/ 255.0f * fLevels) / fLevels* 255.0f, 0.0f, 255.0f);
+        unsigned int greyVal = std::clamp(std::round(float(p["red"]) / 255.0f * fLevels) / fLevels * 255.0f, 0.0f, 255.0f);
         return Pixel(greyVal, greyVal, greyVal);
     };
 
@@ -341,6 +341,7 @@ PPM Graphics::FloydSteinbergDither(const PPM &image)
     modifiedImage.setPixels(modifiedPixelVector);
     return modifiedImage;
 }
+
 PPM Graphics::InPlaceEmboss(const PPM &image)
 {
     std::vector<Pixel> pixelVector = image.getPixels();
@@ -401,25 +402,110 @@ PPM Graphics::InPlaceEmboss(const PPM &image)
 
 int main()
 {
-    std::ifstream infile("./assets/Shahriar.ppm");
-    PPM inputImage(infile);
+    std::cout << "Northern Lights: PPM Image Processing ⸜(｡˃ ᵕ ˂ )⸝♡\n";
+    std::cout << "----------------------------\n";
 
+    // Input handling
+    std::string inputPath;
+    std::cout << "Enter path to input PPM file: ";
+    std::cin >> inputPath;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    std::ifstream infile(inputPath);
+    if (!infile.is_open())
+    {
+        std::cerr << "Error: Unable to open input file." << std::endl;
+        return 1;
+    }
+
+    PPM inputImage(infile);
+    infile.close();
+
+    std::cout << "Image loaded. Dimensions: "
+              << inputImage.getWidth() << "x" << inputImage.getHeight() << "\n\n";
+    std::cout << "----------------------------\n";
+    std::cout << "( •̯́ ₃ •̯̀) Available operations:\n";
+    std::cout << "1. Apply Filter (blur/sharpen/edgeDetect/emboss)\n";
+    std::cout << "2. Convert to Grayscale\n";
+    std::cout << "3. Rotate Image\n";
+    std::cout << "4. Scale Image\n";
+    std::cout << "5. Translate Image\n";
+    std::cout << "----------------------------\n";
+    std::cout << "( ⸝⸝´꒳`⸝⸝) Special Filters: \n";
+    std::cout << "6. Floyd-Steinberg Dithering\n";
+    std::cout << "7. In-Place Emboss\n";
+
+    int choice;
+    std::cout << "Enter operation number (1-7): ";
+    std::cin >> choice;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    PPM result;
     try
     {
-        // PPM result = Graphics::MakeGreyScale(inputImage);
-        // PPM result = Graphics::ApplyFilter(inputImage, "sharpen");
-        // PPM result = Graphics::RotateImage(inputImage, 45);
-        // PPM result = Graphics::ScaleImage(inputImage, 3);
-        // PPM result = Graphics::TranslateImage(inputImage, 50, 0);
-        // PPM result = Graphics::FloydSteinbergDither(inputImage);
-        PPM result = Graphics::InPlaceEmboss(inputImage);
-        result.saveImageToFile("./assets/NewShahriar.ppm");
+        switch (choice)
+        {
+        case 1:
+        { // Apply Filter
+            std::string filter;
+            std::cout << "Enter filter type (blur/sharpen/edgeDetect/emboss): ";
+            std::cin >> filter;
+            result = Graphics::ApplyFilter(inputImage, filter);
+            break;
+        }
+        case 2: // Grayscale
+            result = Graphics::MakeGreyScale(inputImage);
+            break;
+        case 3:
+        { // Rotate
+            double angle;
+            std::cout << "Enter rotation angle in degrees: ";
+            std::cin >> angle;
+            result = Graphics::RotateImage(inputImage, angle);
+            break;
+        }
+        case 4:
+        { // Scale
+            double scale;
+            std::cout << "Enter scale factor: ";
+            std::cin >> scale;
+            result = Graphics::ScaleImage(inputImage, scale);
+            break;
+        }
+        case 5:
+        { // Translate
+            int xOffset, yOffset;
+            std::cout << "Enter X offset: ";
+            std::cin >> xOffset;
+            std::cout << "Enter Y offset: ";
+            std::cin >> yOffset;
+            result = Graphics::TranslateImage(inputImage, xOffset, yOffset);
+            break;
+        }
+        case 6: // Dithering
+            result = Graphics::FloydSteinbergDither(inputImage);
+            break;
+        case 7: // In-place Emboss
+            result = Graphics::InPlaceEmboss(inputImage);
+            break;
+        default:
+            std::cout << "Invalid option selected.\n";
+            return 1;
+        }
+
+        // Get output path and save
+        std::string outputPath;
+        std::cout << "Enter path to save modified image: ";
+        std::cin >> outputPath;
+
+        result.saveImageToFile(outputPath);
+        std::cout << "Image saved to " << outputPath << std::endl;
     }
     catch (const std::exception &e)
     {
-        std::cout << "Error: " << e.what() << std::endl;
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
     }
-    infile.close();
 
     return 0;
 }

@@ -6,7 +6,8 @@
 #include <fstream>
 #include <string.h>
 
-class PPM {
+class PPM
+{
 public:
     // Destructor
     ~PPM();
@@ -17,12 +18,12 @@ public:
     unsigned int getMaxColor() const;
     unsigned int getSize() const;
     unsigned int getWidth() const;
-    const Pixel & operator[](unsigned int) const;
-    Pixel & operator[](unsigned int);
-    const std::vector<Pixel>& getPixels() const;
+    const Pixel &operator[](unsigned int) const;
+    Pixel &operator[](unsigned int);
+    const std::vector<Pixel> &getPixels() const;
     // Constructors
-    const PPM & operator=(const PPM &);
-    const PPM & operator=(PPM &&);
+    const PPM &operator=(const PPM &);
+    const PPM &operator=(PPM &&);
     PPM();
     PPM(const PPM &);
     PPM(PPM &&);
@@ -34,9 +35,10 @@ public:
     void setWidth(unsigned int);
     void setHeight(unsigned int);
     void resize(unsigned int);
-    void setPixels(const std::vector<Pixel>&);
+    void setPixels(const std::vector<Pixel> &);
     // Output
     void saveImageToFile(std::string);
+
 private:
     std::string magic;
     std::string comment;

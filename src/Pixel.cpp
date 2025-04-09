@@ -42,7 +42,6 @@ unsigned int &Pixel::operator[](const char *key)
         throw InputOutOfBoundsException("Key is not a valid color. Try: \"red\", \"green\", or \"blue\".", key);
 }
 
-
 Pixel::Pixel() : red(0),
                  green(0),
                  blue(0) {};

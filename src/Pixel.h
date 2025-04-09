@@ -11,19 +11,21 @@ public:
     {
     public:
         InputOutOfBoundsException(const char *, const char *);
-        const char * returnError() const;
-        const char * returnOffendingIndex() const;
+        const char *returnError() const;
+        const char *returnOffendingIndex() const;
+
     private:
-        const char * errorMessage;
-        const char * offendingIndex;
+        const char *errorMessage;
+        const char *offendingIndex;
     };
 
     ~Pixel();
-    const unsigned int & operator[](const char *) const;
-    unsigned int & operator[](const char *);
+    const unsigned int &operator[](const char *) const;
+    unsigned int &operator[](const char *);
     Pixel();
     Pixel(const Pixel &);
     Pixel(unsigned int, unsigned int, unsigned int);
+
 private:
     unsigned int blue;
     unsigned int green;
