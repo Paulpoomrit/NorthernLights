@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <string>
 #include <algorithm>
+#define M_PI 3.14159265358979323846264338327950288
 
 /* Utilities */
 std::vector<float> Graphics::getFilterMatrix(const std::string &filter)
