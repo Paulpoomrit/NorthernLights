@@ -40,7 +40,7 @@ std::vector<float> Graphics::getFilterMatrix(const std::string &filter)
     return filterArray;
 }
 
-const PPM Graphics::ApplyFilter(const PPM &image, const std::string &filter)
+PPM Graphics::ApplyFilter(const PPM &image, const std::string &filter)
 {
     std::vector<Pixel> pixelVector = image.getPixels();
     std::vector<Pixel> modifiedPixelVector;
@@ -104,7 +104,7 @@ const PPM Graphics::ApplyFilter(const PPM &image, const std::string &filter)
     return modifiedImage;
 }
 
-const PPM Graphics::MakeGreyScale(const PPM &image)
+PPM Graphics::MakeGreyScale(const PPM &image)
 {
     std::vector<Pixel> pixelVector = image.getPixels();
     std::vector<Pixel> modifiedPixelVector;
@@ -132,7 +132,7 @@ const PPM Graphics::MakeGreyScale(const PPM &image)
     return modifiedImage;
 }
 
-const PPM Graphics::RotateImage(const PPM &image, double rotationAngle)
+PPM Graphics::RotateImage(const PPM &image, double rotationAngle)
 {
     std::vector<Pixel> pixelVector = image.getPixels();
     std::vector<Pixel> modifiedPixelVector;
@@ -178,7 +178,7 @@ const PPM Graphics::RotateImage(const PPM &image, double rotationAngle)
     return modifiedImage;
 }
 
-const PPM Graphics::ScaleImage(const PPM& image, double scale)
+PPM Graphics::ScaleImage(const PPM& image, double scale)
 {
     std::vector<Pixel> pixelVector = image.getPixels();
     std::vector<Pixel> modifiedPixelVector;
@@ -218,7 +218,7 @@ const PPM Graphics::ScaleImage(const PPM& image, double scale)
     return modifiedImage;
 }
 
-const PPM Graphics::TranslateImage(const PPM& image, int xOffset, int yOffset)
+PPM Graphics::TranslateImage(const PPM& image, int xOffset, int yOffset)
 {
     std::vector<Pixel> pixelVector = image.getPixels();
     std::vector<Pixel> modifiedPixelVector;
