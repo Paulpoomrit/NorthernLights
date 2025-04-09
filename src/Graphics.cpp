@@ -41,6 +41,7 @@ std::vector<float> Graphics::getFilterMatrix(const std::string &filter)
     }
     return filterArray;
 }
+
 int Graphics::pixelDifference(unsigned int a, unsigned int b)
 {
     return (a > b) ? static_cast<int>(a - b) : -static_cast<int>(b - a);
@@ -60,15 +61,9 @@ PPM Graphics::ApplyFilter(const PPM &image, const std::string &filter)
 
     // define surrounding pixels for the current pixel
     const std::vector<int> offsets = {
-        -width - 1,
-        -width,
-        -width + 1,
-        -1,
-        0,
-        1,
-        width - 1,
-        width,
-        width + 1};
+        -width - 1, -width, -width + 1,
+        -1, 0, 1,
+        width - 1, width, width + 1};
 
     // get an appropriate filter matrix
     try
@@ -207,7 +202,6 @@ PPM Graphics::ScaleImage(const PPM &image, double scale)
     {
         for (int x = 0; x < width * scale; x++) // traverse columns of pixels
         {
-
             // matrix-vector multiplication
             int newX = round(x * scalingMatrixInv[0] + y * scalingMatrixInv[1]);
             int newY = round(x * scalingMatrixInv[2] + y * scalingMatrixInv[3]);
@@ -244,7 +238,6 @@ PPM Graphics::TranslateImage(const PPM &image, int xOffset, int yOffset)
     {
         for (int x = 0; x < width; x++) // traverse columns of pixels
         {
-
             // matrix-vector multiplication
             int newX = round(x * translatingMatrixInv[0] + y * translatingMatrixInv[1] + translatingMatrixInv[2]);
             int newY = round(x * translatingMatrixInv[3] + y * translatingMatrixInv[4] + translatingMatrixInv[5]);
@@ -285,15 +278,9 @@ PPM Graphics::FloydSteinbergDither(const PPM &image)
     const int height = image.getHeight();
 
     const std::vector<int> offsets = {
-        -width - 1,
-        -width,
-        -width + 1,
-        -1,
-        0,
-        1,
-        width - 1,
-        width,
-        width + 1};
+        -width - 1, -width, -width + 1,
+        -1, 0, 1,
+        width - 1, width, width + 1};
 
     // applying filter
     for (int y = 0; y < height; y++) // traverse rows of pixels
@@ -304,11 +291,10 @@ PPM Graphics::FloydSteinbergDither(const PPM &image)
             Pixel originalPixel = modifiedPixelVector[pixelLoc];
             Pixel quantizedPixel = QuantiseGreyscaleNBit(originalPixel);
 
-            int error[3] =
-                {
-                    pixelDifference(originalPixel["red"], quantizedPixel["red"]),
-                    pixelDifference(originalPixel["green"], quantizedPixel["green"]),
-                    pixelDifference(originalPixel["blue"], quantizedPixel["blue"])};
+            int error[3] = {
+                pixelDifference(originalPixel["red"], quantizedPixel["red"]),
+                pixelDifference(originalPixel["green"], quantizedPixel["green"]),
+                pixelDifference(originalPixel["blue"], quantizedPixel["blue"])};
 
             modifiedPixelVector[pixelLoc] = quantizedPixel;
 
@@ -354,15 +340,9 @@ PPM Graphics::InPlaceEmboss(const PPM &image)
 
     // define surrounding pixels for the current pixel
     const std::vector<int> offsets = {
-        -width - 1,
-        -width,
-        -width + 1,
-        -1,
-        0,
-        1,
-        width - 1,
-        width,
-        width + 1};
+        -width - 1, -width, -width + 1,
+        -1, 0, 1,
+        width - 1, width, width + 1};
 
     // get an appropriate filter matrix
     try
@@ -454,9 +434,11 @@ int main()
             result = Graphics::ApplyFilter(inputImage, filter);
             break;
         }
-        case 2: // Grayscale
+        case 2:
+        { // Grayscale
             result = Graphics::MakeGreyScale(inputImage);
             break;
+        }
         case 3:
         { // Rotate
             double angle;
@@ -483,15 +465,21 @@ int main()
             result = Graphics::TranslateImage(inputImage, xOffset, yOffset);
             break;
         }
-        case 6: // Dithering
+        case 6:
+        { // Dithering
             result = Graphics::FloydSteinbergDither(inputImage);
             break;
-        case 7: // In-place Emboss
+        }
+        case 7:
+        { // In-place Emboss
             result = Graphics::InPlaceEmboss(inputImage);
             break;
+        }
         default:
+        {
             std::cout << "Invalid option selected.\n";
             return 1;
+        }
         }
 
         // Get output path and save
